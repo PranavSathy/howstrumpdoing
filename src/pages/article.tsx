@@ -5,7 +5,7 @@ import { faXTwitter } from "@fortawesome/free-brands-svg-icons/faXTwitter";
 import { faCopy } from "@fortawesome/free-regular-svg-icons/faCopy";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export default function Home() {
+export default function Article() {
   return (
     <Layout title={"HTD | Article Title"}>
       <div className="bg-gray-50 border-gray-200 border-t px-5 lg:px-20">
