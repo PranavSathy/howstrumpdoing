@@ -1,7 +1,6 @@
-import {
-  BuildingLibraryIcon,
-  ChatBubbleLeftIcon,
-} from "@heroicons/react/24/outline";
+import { faDiscord } from "@fortawesome/free-brands-svg-icons/faDiscord";
+import { faLandmarkDome } from "@fortawesome/free-solid-svg-icons/faLandmarkDome";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Head from "next/head";
 import Link from "next/link";
 
@@ -10,14 +9,14 @@ function Header() {
     <header className="p-10">
       <div className="hidden sm:flex w-full justify-between space-x-8 max-w-[1280] justify-self-center">
         <div className="content-end">
-          <div className="font-title text-gray-500 py-2 px-3 rounded-md bg-gray-200">
+          <div className="body-title text-gray-500 py-2 px-3 rounded-md bg-gray-200">
             Day 1
           </div>
         </div>
         <Link href="/" className="items-center flex flex-col text-gray-500">
-          <BuildingLibraryIcon aria-hidden="true" className="size-8" />
+          <FontAwesomeIcon icon={faLandmarkDome} className="size-8" />
           <span className="font-extrabold text-2xl">HowsTrumpDoing</span>
-          <span className="font-title">
+          <span className="body-title">
             Chronicling the Trump Presidency One Act At a Time
           </span>
         </Link>
@@ -32,15 +31,15 @@ function Header() {
           href="/"
           className="items-center text-center flex flex-col text-gray-500"
         >
-          <BuildingLibraryIcon aria-hidden="true" className="size-8" />
+          <FontAwesomeIcon icon={faLandmarkDome} className="size-8" />
           <span className="font-extrabold text-2xl">HowsTrumpDoing</span>
-          <span className="font-title">
+          <span className="body-title">
             Chronicling the Trump Presidency One Act At a Time
           </span>
         </Link>
         <div className="flex justify-between">
           <div className="content-center">
-            <div className="font-title text-gray-500 py-2 px-3 rounded-md bg-gray-200">
+            <div className="body-title text-gray-500 py-2 px-3 rounded-md bg-gray-200">
               Day 1
             </div>
           </div>
@@ -69,9 +68,9 @@ function Footer() {
           alive.
         </p>
         <div className="flex flex-col space-y-2 items-center md:items-end">
-          <div className="font-title p-3 rounded-md bg-gray-200 whitespace-nowrap flex flex-row space-x-1">
+          <div className="body-title p-3 rounded-md bg-gray-200 whitespace-nowrap flex flex-row space-x-1">
             {/* TODO(sathyp): Leverage Discord Icon here and link to Discord server */}
-            <ChatBubbleLeftIcon aria-hidden="true" className="size-4" />
+            <FontAwesomeIcon icon={faDiscord} className="size-4" />
             <span>Join Our Discord Community</span>
           </div>
           <span className="body-s text-gray-900 whitespace-nowrap text-end">

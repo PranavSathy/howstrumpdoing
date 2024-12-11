@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  h1 {
+    @apply font-semibold text-4xl;
+  }
+
   h2 {
     @apply font-semibold text-2xl;
   }
@@ -18,26 +22,31 @@
 }
 
 @layer utilities {
-  .font-title {
+  .body-title {
     @apply font-semibold uppercase text-xs;
+  }
+
+  .body-xl {
+    font-size: 20px;
+    line-height: 32px;
+    letter-spacing: -1.5%;
   }
 
   .body-l {
     font-size: 18px;
     line-height: 26px;
     letter-spacing: -1.5%;
-    /* @apply text-lg; */
   }
 
   .body-m {
     font-size: 16px;
     line-height: 28px;
-    /* @apply text-base; */
+    letter-spacing: -1.5%;
   }
 
   .body-s {
     font-size: 14px;
     line-height: 22px;
-    /* @apply text-sm; */
+    letter-spacing: -1.5%;
   }
 }

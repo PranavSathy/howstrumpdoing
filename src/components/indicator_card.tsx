@@ -1,7 +1,6 @@
-import {
-  ArrowDownCircleIcon,
-  ArrowUpCircleIcon,
-} from "@heroicons/react/24/solid";
+import { faArrowCircleDown } from "@fortawesome/free-solid-svg-icons/faArrowCircleDown";
+import { faArrowCircleUp } from "@fortawesome/free-solid-svg-icons/faArrowCircleUp";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cn from "classnames";
 
 interface Props {
@@ -27,9 +26,15 @@ export function IndicatorCard({ label, percentage, selected }: Props) {
           })}
         </span>
         {percentage > 0 ? (
-          <ArrowUpCircleIcon className="text-green-600 size-6 self-center" />
+          <FontAwesomeIcon
+            icon={faArrowCircleUp}
+            className="text-green-600 size-5 self-center"
+          />
         ) : (
-          <ArrowDownCircleIcon className="text-red-600 size-6 self-center" />
+          <FontAwesomeIcon
+            icon={faArrowCircleDown}
+            className="text-red-600 size-5 self-center"
+          />
         )}
       </div>
     </div>

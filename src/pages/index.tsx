@@ -1,12 +1,12 @@
 import { IndicatorCard } from "@/components/indicator_card";
 import { Layout } from "@/components/layout";
 import { LegislationCard } from "@/components/legislation_card";
+import Link from "next/link";
 
 function Indicators() {
   return (
-    // TODO(sathyp): This overflows X and looks ugly.
-    <div className="grid py-10 bg-gray-50 border-gray-200 border-y px-5 lg:px-20">
-      <div className="flex flex-col space-y-2 overflow-x-auto max-w-[1280] w-full justify-self-center">
+    <div className="py-10 bg-gray-50 border-gray-200 border-y px-5 lg:px-0">
+      <div className="flex flex-col space-y-2 overflow-x-auto max-w-[1280] w-full justify-self-center lg:ml-40">
         <span className="text-gray-500 font-medium text-xs">
           Since taking office
         </span>
@@ -28,7 +28,7 @@ function Indicators() {
 function LegislationToWatch() {
   return (
     <div className="flex-[1] pt-8 lg:pt-0 lg:pl-8 flex flex-col space-y-4">
-      <span className="font-title text-gray-500">Legislation To Watch</span>
+      <span className="body-title text-gray-500">Legislation To Watch</span>
 
       <LegislationCard
         title="H.R. 390: Maurice D. Hinchey Hudson River Valley National Heritage
@@ -65,32 +65,36 @@ interface ArticleProps {
   author: string;
   date: string;
   img: string;
+  url: string;
 }
 
-function OlderArticle({ title, headline, date, img }: ArticleProps) {
+function OlderArticle({ title, headline, date, img, url }: ArticleProps) {
   return (
-    <div className="flex flex-col space-y-2">
+    <Link href={url} className="flex flex-col space-y-2">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img alt="" className="h-40 rounded-md" src={img} />
-      <h3>{title}</h3>
+      <h3 className="hover:underline">{title}</h3>
       <p className="body-s">{headline}</p>
-      <span className="font-title text-gray-500">{date}</span>
-    </div>
+      <span className="body-title text-gray-500">{date}</span>
+    </Link>
   );
 }
 
-function TopArticle({ title, headline, date, img, author }: ArticleProps) {
+function TopArticle({ title, headline, date, img, url, author }: ArticleProps) {
   return (
-    <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-8">
+    <Link
+      href={url}
+      className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-8"
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img alt="" className="h-56 rounded-md" src={img} />
       <div className="flex flex-col space-y-2">
-        <span className="font-title text-gray-500">{date}</span>
-        <h2>{title}</h2>
+        <span className="body-title text-gray-500">{date}</span>
+        <h2 className="hover:underline">{title}</h2>
         <p className="body-l">{headline}</p>
         <span className="font-semibold text-sm">By {author}</span>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -104,6 +108,7 @@ export default function Home() {
           {/* Top Article */}
           <div className="pb-8">
             <TopArticle
+              url="/article"
               img="https://images.unsplash.com/photo-1478576573461-bb5026f9b302?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               author="Pranav Sathyanarayanan"
               title="What is the Social Security Fairness Act of 2023 About?"
@@ -117,6 +122,7 @@ export default function Home() {
           {/* Next 3 */}
           <div className="flex flex-col lg:flex-row space-y-8 lg:space-y-0 lg:space-x-8 pt-8">
             <OlderArticle
+              url="/article"
               img="https://images.unsplash.com/photo-1478576573461-bb5026f9b302?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               title="Trump Cabinet nominees targeted in attacks ranging from 'bomb threats' to 'swatting'"
               headline="Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
@@ -127,6 +133,7 @@ export default function Home() {
             />
 
             <OlderArticle
+              url="/article"
               img="https://images.unsplash.com/photo-1478576573461-bb5026f9b302?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               title="Trump Cabinet nominees targeted in attacks ranging from 'bomb threats' to 'swatting'"
               headline="Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
@@ -137,6 +144,7 @@ export default function Home() {
             />
 
             <OlderArticle
+              url="/article"
               img="https://images.unsplash.com/photo-1478576573461-bb5026f9b302?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               title="Trump Cabinet nominees targeted in attacks ranging from 'bomb threats' to 'swatting'"
               headline="Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
