@@ -19,7 +19,7 @@ export default function Home() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             alt=""
-            className="flex-[1] h-40 rounded-md"
+            className="flex-[1] object-cover h-40 rounded-md"
             src="https://images.unsplash.com/photo-1478576573461-bb5026f9b302?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           />
         </div>
@@ -61,8 +61,8 @@ export default function Home() {
 
           <div className="flex-[1] pt-8 lg:pt-0 lg:pl-8 flex flex-col space-y-4">
             <span className="body-title text-gray-500">Share This</span>
-            {/* <FontAwesomeIcon icon={faLandmarkDome} className="size-8" /> */}
 
+            {/* TODO(sathyp): Actually link these out. */}
             <div className="flex space-x-2">
               <FontAwesomeIcon
                 icon={faXTwitter}
