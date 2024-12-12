@@ -3,5 +3,5 @@ name = "howstrumpdoing"
 pages_build_output_dir = "out"
 compatibility_date = "2024-12-12"
 
-[env]
+[vars]
 NODE_VERSION = "20"
