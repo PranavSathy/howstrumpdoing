@@ -9,7 +9,7 @@ export default function Article() {
   return (
     <Layout title={"HTD | Article Title"}>
       <div className="bg-gray-50 border-gray-200 border-t px-5 lg:px-20">
-        <div className="py-5 flex flex-col lg:flex-row lg:max-w-[1280] w-full lg:justify-self-center">
+        <div className="py-5 flex flex-col lg:flex-row lg:max-w-[1280px] w-full lg:justify-self-center">
           <div className="flex-[3] pb-2 lg:pb-0 flex flex-col self-end">
             <h1>What is the Social Security Fairness Act of 2023 About?</h1>
             <span className="body-s">By Pranav Sathyanarayan</span>
@@ -26,7 +26,7 @@ export default function Article() {
       </div>
 
       <div className="px-5 lg:px-20">
-        <div className="py-5 flex flex-col lg:flex-row lg:max-w-[1280] lg:justify-self-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
+        <div className="py-5 flex flex-col lg:flex-row lg:max-w-[1280px] lg:justify-self-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
           <div className="flex-[3] pb-8 lg:pb-0 lg:pr-8">
             <p className="body-xl">
               Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit

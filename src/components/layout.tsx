@@ -7,7 +7,7 @@ import Link from "next/link";
 function Header() {
   return (
     <header className="p-10">
-      <div className="hidden sm:flex w-full justify-between space-x-8 max-w-[1280] justify-self-center">
+      <div className="hidden sm:flex w-full justify-between space-x-8 max-w-[1280px] justify-self-center">
         <div className="content-end">
           <div className="body-title text-gray-500 py-2 px-3 rounded-md bg-gray-200">
             Day 1
@@ -55,7 +55,7 @@ function Header() {
 function Footer() {
   return (
     <footer className="p-10 pb-20 lg:h-56 bg-gray-50 border-t border-gray-500">
-      <div className="flex flex-col md:flex-row w-full justify-between space-y-8 md:space-y-0 md:space-x-8 max-w-[1280] justify-self-center">
+      <div className="flex flex-col md:flex-row w-full justify-between space-y-8 md:space-y-0 md:space-x-8 max-w-[1280px] justify-self-center">
         <span className="font-extrabold text-2xl text-gray-500">
           Citizen Journalism In Action
         </span>

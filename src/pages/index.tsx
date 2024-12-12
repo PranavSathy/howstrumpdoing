@@ -6,7 +6,7 @@ import Link from "next/link";
 function Indicators() {
   return (
     <div className="py-10 bg-gray-50 border-gray-200 border-y px-5 lg:px-0">
-      <div className="flex flex-col space-y-2 overflow-x-auto max-w-[1280] w-full justify-self-center lg:ml-40">
+      <div className="flex flex-col space-y-2 overflow-x-auto max-w-[1280px] w-full justify-self-center lg:ml-40">
         <span className="text-gray-500 font-medium text-xs">
           Since taking office
         </span>
@@ -103,7 +103,7 @@ export default function Home() {
     <Layout title={"Hows Trump Doing"}>
       <Indicators />
 
-      <div className="p-5 lg:p-20 flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-gray-200 lg:max-w-[1280] lg:justify-self-center">
+      <div className="p-5 lg:p-20 flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-gray-200 lg:max-w-[1280px] lg:justify-self-center">
         <div className="flex-[3] pb-8 lg:pb-0 lg:pr-8 flex flex-col divide-y divide-gray-200">
           {/* Top Article */}
           <div className="pb-8">

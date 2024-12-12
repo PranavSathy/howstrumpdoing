@@ -9,7 +9,7 @@ export default function Mission() {
   return (
     <Layout title={"Hows Trump Doing | Mission"}>
       <div className="bg-gray-50 border-gray-200 border-t px-5 lg:px-20">
-        <div className="py-5 flex flex-col lg:flex-row lg:max-w-[1280] w-full lg:justify-self-center">
+        <div className="py-5 flex flex-col lg:flex-row lg:max-w-[1280px] w-full lg:justify-self-center">
           <div className="flex-[3] pb-2 lg:pb-0 flex flex-col self-end">
             <h1>Hows Trump Doing?</h1>
             <span className="body-s">By Pranav Sathyanarayan</span>
@@ -26,7 +26,7 @@ export default function Mission() {
       </div>
 
       <div className="px-5 lg:px-20">
-        <div className="py-5 flex flex-col lg:flex-row lg:max-w-[1280] lg:justify-self-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
+        <div className="py-5 flex flex-col lg:flex-row lg:max-w-[1280px] lg:justify-self-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
           <div className="flex-[3] pb-8 lg:pb-0 lg:pr-8">
             <p className="body-xl">
               The results of the 2024 political election was a wake-up call for
@@ -59,7 +59,7 @@ export default function Mission() {
               aria-label="Interactive line chart"
               id="datawrapper-chart-li1cN"
               src="https://datawrapper.dwcdn.net/li1cN/1/"
-              className="border-none min-w-[100%] h-[464px] my-8"
+              className="border-none min-w-full h-[464px] my-8"
               data-external="1"
             ></iframe>
 

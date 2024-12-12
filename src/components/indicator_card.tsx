@@ -13,7 +13,7 @@ export function IndicatorCard({ label, percentage, selected }: Props) {
   return (
     <div
       className={cn(
-        "flex flex-col justify-between space-y-1 rounded-md border p-3 min-w-[128] min-h-[72px] cursor-pointer hover:shadow",
+        "flex flex-col justify-between space-y-1 rounded-md border p-3 min-w-[128px] min-h-[72px] cursor-pointer hover:shadow",
         selected ? "border-gray-500 bg-gray-100" : "border-gray-200 bg-white"
       )}
     >
