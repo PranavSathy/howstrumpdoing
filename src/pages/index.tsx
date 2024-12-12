@@ -6,12 +6,12 @@ import Link from "next/link";
 function Indicators() {
   return (
     <div className="py-10 bg-gray-50 border-gray-200 border-y px-5 lg:px-0">
-      <div className="flex flex-col space-y-2 overflow-x-auto max-w-[1280px] w-full justify-self-center lg:ml-40">
+      <div className="flex flex-col space-y-2 max-w-[1280px] w-full justify-self-center lg:ml-40">
         <span className="text-gray-500 font-medium text-xs">
           Since taking office
         </span>
 
-        <div className="flex flex-row space-x-2">
+        <div className="flex flex-row overflow-x-auto space-x-2">
           <IndicatorCard label="GDP" percentage={-0.7} />
           <IndicatorCard label="Unemployment" percentage={5.2} />
           <IndicatorCard label="Wage Growth" percentage={1.68} />
