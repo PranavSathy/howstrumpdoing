@@ -7,17 +7,31 @@ interface Props {
   label: string;
   percentage: number;
   selected?: boolean;
+  inverted?: boolean;
+  onClick: () => void;
 }
 
-export function IndicatorCard({ label, percentage, selected }: Props) {
+export function IndicatorCard({
+  label,
+  percentage,
+  selected,
+  inverted,
+  onClick,
+}: Props) {
+  const upColor = inverted ? "text-red-600" : "text-green-600";
+  const downColor = inverted ? "text-green-600" : "text-red-600";
+
   return (
     <div
       className={cn(
-        "flex flex-col justify-between space-y-1 rounded-md border p-3 min-w-[128px] min-h-[72px] cursor-pointer hover:shadow",
+        "flex flex-col justify-between space-y-1 rounded-md border p-3 min-w-fit min-h-[72px] cursor-pointer hover:shadow",
         selected ? "border-gray-500 bg-gray-100" : "border-gray-200 bg-white"
       )}
+      onClick={onClick}
     >
-      <span className="text-xs font-semibold text-gray-900">{label}</span>
+      <span className="text-xs font-semibold text-gray-900 text-nowrap min-w-[calc(128px-24px)]">
+        {label}
+      </span>
       <div className="flex flex-row justify-between">
         <span className="text-xl text-gray-900">
           {Number(percentage / 100).toLocaleString(undefined, {
@@ -28,12 +42,12 @@ export function IndicatorCard({ label, percentage, selected }: Props) {
         {percentage > 0 ? (
           <FontAwesomeIcon
             icon={faArrowCircleUp}
-            className="text-green-600 size-5 self-center"
+            className={cn("size-5 self-center", upColor)}
           />
         ) : (
           <FontAwesomeIcon
             icon={faArrowCircleDown}
-            className="text-red-600 size-5 self-center"
+            className={cn("size-5 self-center", downColor)}
           />
         )}
       </div>
