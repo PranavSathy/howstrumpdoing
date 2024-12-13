@@ -22,6 +22,11 @@
 }
 
 @layer utilities {
+  .chart-percentage {
+    font-size: 34px;
+    line-height: 28px;
+  }
+
   .body-title {
     @apply font-semibold uppercase text-xs;
   }

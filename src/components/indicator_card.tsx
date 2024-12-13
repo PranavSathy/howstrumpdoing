@@ -11,6 +11,27 @@ interface Props {
   onClick: () => void;
 }
 
+export function Arrow({
+  inverted,
+  percentage,
+  classes,
+}: Pick<Props, "inverted" | "percentage"> & { classes?: string }) {
+  const upColor = inverted ? "text-red-600" : "text-green-600";
+  const downColor = inverted ? "text-green-600" : "text-red-600";
+
+  return percentage > 0 ? (
+    <FontAwesomeIcon
+      icon={faArrowCircleUp}
+      className={cn("size-5", upColor, classes)}
+    />
+  ) : (
+    <FontAwesomeIcon
+      icon={faArrowCircleDown}
+      className={cn("size-5", downColor, classes)}
+    />
+  );
+}
+
 export function IndicatorCard({
   label,
   percentage,
@@ -18,9 +39,6 @@ export function IndicatorCard({
   inverted,
   onClick,
 }: Props) {
-  const upColor = inverted ? "text-red-600" : "text-green-600";
-  const downColor = inverted ? "text-green-600" : "text-red-600";
-
   return (
     <div
       className={cn(
@@ -39,17 +57,11 @@ export function IndicatorCard({
             minimumFractionDigits: 2,
           })}
         </span>
-        {percentage > 0 ? (
-          <FontAwesomeIcon
-            icon={faArrowCircleUp}
-            className={cn("size-5 self-center", upColor)}
-          />
-        ) : (
-          <FontAwesomeIcon
-            icon={faArrowCircleDown}
-            className={cn("size-5 self-center", downColor)}
-          />
-        )}
+        <Arrow
+          inverted={inverted}
+          percentage={percentage}
+          classes="self-center"
+        />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { IndicatorCard } from "@/components/indicator_card";
+import { Arrow, IndicatorCard } from "@/components/indicator_card";
 import { Layout } from "@/components/layout";
 import { LegislationCard } from "@/components/legislation_card";
 import { LineChart } from "@/components/line_chart";
@@ -70,6 +70,38 @@ const INDICATORS_TO_RENDER: Array<keyof Props> = [
   "importPriceIndex",
 ];
 
+const PERCENT_RENDERER = (d: Observation) =>
+  Number(d.value / 100).toLocaleString(undefined, {
+    style: "percent",
+    minimumFractionDigits: 2,
+  });
+
+const INDICATOR_METRIC_RENDERER: Map<keyof Props, (d: Observation) => string> =
+  new Map([
+    [
+      "gdp",
+      (d) =>
+        `USD ${new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(d.value / 1000)} Trillion`,
+    ],
+    ["unemployment", PERCENT_RENDERER],
+    ["wageGrowth", PERCENT_RENDERER],
+    ["inflation", PERCENT_RENDERER],
+    ["interestRate", PERCENT_RENDERER],
+    ["cpi", (d) => `${d.value}`],
+    [
+      "debt",
+      (d) =>
+        `USD ${new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(d.value / 1000)} Trillion`,
+    ],
+    ["importPriceIndex", (d) => `${d.value}`],
+  ]);
+
 function Indicators(props: Props) {
   const [selectedMetric, setSelectedMetric] = useState<keyof Props | null>(
     null
@@ -81,6 +113,10 @@ function Indicators(props: Props) {
     const B = data[0].value ?? 0;
     return (100 * (A - B)) / B;
   };
+
+  const selectedMetricPercentage = selectedMetric
+    ? percentDiff(props[selectedMetric].data)
+    : 0;
 
   return (
     <div className="py-10 bg-gray-50 border-gray-200 border-y">
@@ -108,11 +144,44 @@ function Indicators(props: Props) {
         </div>
 
         {selectedMetric != null && props[selectedMetric].data.length > 0 && (
-          <div className="bg-white border max-w-[1120px] border-gray-200 rounded-md">
-            <LineChart
-              data={props[selectedMetric].data}
-              invertColors={props[selectedMetric].inverted}
-            />
+          <div className="pt-2 flex flex-col space-y-2 text-gray-900">
+            <div className="flex space-x-2 items-end">
+              <h2>{props[selectedMetric].label}</h2>
+              {INDICATOR_METRIC_RENDERER.has(selectedMetric) && (
+                <h3 className="text-gray-500">
+                  {INDICATOR_METRIC_RENDERER.get(selectedMetric)!(
+                    props[selectedMetric].data[
+                      props[selectedMetric].data.length - 1
+                    ]
+                  )}
+                </h3>
+              )}
+            </div>
+            <div className="flex space-x-2">
+              <span className="chart-percentage">
+                {Number(selectedMetricPercentage / 100).toLocaleString(
+                  undefined,
+                  {
+                    style: "percent",
+                    minimumFractionDigits: 2,
+                  }
+                )}
+              </span>
+              <Arrow
+                classes="self-end"
+                percentage={selectedMetricPercentage}
+                inverted={props[selectedMetric].inverted}
+              />
+              <span className="body-title text-gray-500 self-end">
+                Since Jan 1, 2020
+              </span>
+            </div>
+            <div className="bg-white border max-w-[1120px] border-gray-200 rounded-md">
+              <LineChart
+                data={props[selectedMetric].data}
+                invertColors={props[selectedMetric].inverted}
+              />
+            </div>
           </div>
         )}
       </div>
