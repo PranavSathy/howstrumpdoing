@@ -25,7 +25,31 @@ interface ArticleType {
   body: PortableTextBlock;
 }
 
+interface LegislationType {
+  title: string;
+  link: string;
+  status: string;
+  description: string;
+}
+
 type SanityArticle = SanityDocument<ArticleType>;
+type SanityLegislation = SanityDocument<LegislationType>;
+
+const N_MOST_RECENT_LEGISLATIONS_QUERY = `*[
+  _type == "legislation"
+]|order(_updatedAt desc)[0...$limit]{_id, title, link, status, description}`;
+
+export async function getNMostRecentLegislations(limit: number) {
+  return client.fetch<SanityLegislation[]>(
+    N_MOST_RECENT_LEGISLATIONS_QUERY,
+    { limit },
+    { next: { revalidate: 30 } }
+  );
+}
+
+export type Legislation = Awaited<
+  ReturnType<typeof getNMostRecentLegislations>
+>[number];
 
 const N_MOST_RECENT_POSTS_QUERY = `*[
     _type == "post"

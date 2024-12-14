@@ -3,7 +3,12 @@ import { Layout } from "@/components/layout";
 import { LegislationCard } from "@/components/legislation_card";
 import { LineChart } from "@/components/line_chart";
 import { getObservation, type Observation } from "@/lib/fred";
-import { getNMostRecentPosts, PostPreview } from "@/lib/sanity";
+import {
+  getNMostRecentLegislations,
+  getNMostRecentPosts,
+  Legislation,
+  PostPreview,
+} from "@/lib/sanity";
 import { formatDistanceToNow } from "date-fns";
 import { GetStaticProps } from "next";
 import Link from "next/link";
@@ -27,6 +32,8 @@ interface Props {
 
   mostRecentPost: PostPreview;
   posts: PostPreview[];
+
+  legislations: Legislation[];
 }
 
 type EconomicIndicator = {
@@ -44,6 +51,7 @@ export const getStaticProps = (async () => {
   const importPriceIndex = await getObservation("IR");
 
   const [mostRecentPost, ...posts] = await getNMostRecentPosts(4);
+  const legislations = await getNMostRecentLegislations(5);
 
   return {
     props: {
@@ -70,6 +78,7 @@ export const getStaticProps = (async () => {
 
       mostRecentPost,
       posts,
+      legislations,
     },
   };
 }) satisfies GetStaticProps<Props>;
@@ -206,36 +215,19 @@ function Indicators(props: Props) {
   );
 }
 
-function LegislationToWatch() {
+function LegislationToWatch(props: { legislations: Legislation[] }) {
   return (
     <div className="flex-[1] pt-8 lg:pt-0 lg:pl-8 flex flex-col space-y-4">
       <span className="body-title text-gray-500">Legislation To Watch</span>
 
-      <LegislationCard
-        title="H.R. 390: Maurice D. Hinchey Hudson River Valley National Heritage
-      Area Enhancement Act"
-        subtext="Passed House on Mar 7, 2025"
-      />
-
-      <LegislationCard
-        title="S. 3970: A bill to amend title 38, United States Code, to ensure that the Secretary of Veterans Affairs repays members of the Armed Forces for certain contributions made by such members towards Post-9/11 Educational Assistance, and for other purposes."
-        subtext="Passed House on Jan 27, 2025"
-      />
-
-      <LegislationCard
-        title="H.R. 3738: Veterans Economic Opportunity and Transition Administration Act"
-        subtext="Passed House on Mar 7, 2025"
-      />
-
-      <LegislationCard
-        title="S. 656: Veteran Improvement Commercial Driver License Act of 2023"
-        subtext="Passed House on Jan 27, 2025"
-      />
-
-      <LegislationCard
-        title="H.R. 390: Maurice D. Hinchey Hudson River Valley National Heritage Area Enhancement Act"
-        subtext="Passed House on Mar 7, 2025"
-      />
+      {props.legislations.map((l) => (
+        <LegislationCard
+          key={l._id}
+          title={l.title}
+          subtext={l.status}
+          link={l.link}
+        />
+      ))}
     </div>
   );
 }
@@ -321,7 +313,7 @@ export default function Home(props: Props) {
             ))}
           </div>
         </div>
-        <LegislationToWatch />
+        <LegislationToWatch legislations={props.legislations} />
       </div>
     </Layout>
   );
