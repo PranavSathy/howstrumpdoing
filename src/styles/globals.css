@@ -27,6 +27,18 @@
     line-height: 28px;
   }
 
+  .prose-h1 {
+    @apply font-semibold text-4xl;
+  }
+
+  .prose-h2 {
+    @apply font-semibold text-2xl;
+  }
+
+  .prose-h3 {
+    @apply font-semibold text-base;
+  }
+
   .body-title {
     @apply font-semibold uppercase text-xs;
   }

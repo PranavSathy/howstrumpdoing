@@ -10,7 +10,7 @@ export default function App({ Component, pageProps }: AppProps) {
           type: "website",
           locale: "en_US",
           url: "https://howstrumpdoing.com",
-          siteName: "Hows Trump Doing",
+          siteName: "How's Trump Doing",
           description:
             "A citizen journalism effort to track the impact of the 47th POTUS.",
         }}
