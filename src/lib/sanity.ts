@@ -27,15 +27,35 @@ interface ArticleType {
 
 type SanityArticle = SanityDocument<ArticleType>;
 
-// TODO(sathyp): Have this query literally every article.
 const N_MOST_RECENT_POSTS_QUERY = `*[
     _type == "post"
     && defined(slug.current)
-  ]|order(publishedAt desc)[0...12]{_id, slug}`;
+  ]|order(publishedAt desc)[0...$limit]{_id, slug, publishedAt, title, description, image, author}`;
 
-export async function getNMostRecentPosts() {
-  return client.fetch<SanityArticle[]>(
+export async function getNMostRecentPosts(limit: number) {
+  const posts = await client.fetch<SanityArticle[]>(
     N_MOST_RECENT_POSTS_QUERY,
+    { limit },
+    { next: { revalidate: 30 } }
+  );
+  return posts.map((p) => ({
+    ...p,
+    image: p.image ? urlFor(p.image)?.width(320).height(160).url() : undefined,
+  }));
+}
+
+export type PostPreview = Awaited<
+  ReturnType<typeof getNMostRecentPosts>
+>[number];
+
+const ALL_POSTS_SLUGS_QUERY = `*[
+    _type == "post"
+    && defined(slug.current)
+  ]|order(publishedAt desc){_id, slug}`;
+
+export async function getAllPostSlugs() {
+  return client.fetch<SanityArticle[]>(
+    ALL_POSTS_SLUGS_QUERY,
     {},
     { next: { revalidate: 30 } }
   );

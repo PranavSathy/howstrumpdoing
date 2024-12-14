@@ -1,10 +1,10 @@
 import Article from "@/components/article";
-import { getNMostRecentPosts, getPost } from "@/lib/sanity";
+import { getAllPostSlugs, getPost } from "@/lib/sanity";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { PortableText } from "next-sanity";
 
 export const getStaticPaths = (async () => {
-  const posts = await getNMostRecentPosts();
+  const posts = await getAllPostSlugs();
   const paths = posts.map((d) => ({
     params: { slug: d.slug.current as string },
   }));

@@ -3,6 +3,8 @@ import { Layout } from "@/components/layout";
 import { LegislationCard } from "@/components/legislation_card";
 import { LineChart } from "@/components/line_chart";
 import { getObservation, type Observation } from "@/lib/fred";
+import { getNMostRecentPosts, PostPreview } from "@/lib/sanity";
+import { formatDistanceToNow } from "date-fns";
 import { GetStaticProps } from "next";
 import Link from "next/link";
 import { useState } from "react";
@@ -22,7 +24,14 @@ interface Props {
   cpi: Indicator;
   debt: Indicator;
   importPriceIndex: Indicator;
+
+  mostRecentPost: PostPreview;
+  posts: PostPreview[];
 }
+
+type EconomicIndicator = {
+  [K in keyof Props]: Props[K] extends Indicator ? K : never;
+}[keyof Props];
 
 export const getStaticProps = (async () => {
   const gdp = await getObservation("GDP");
@@ -33,6 +42,9 @@ export const getStaticProps = (async () => {
   const cpi = await getObservation("CPIAUCSL");
   const debt = await getObservation("GFDEBTN");
   const importPriceIndex = await getObservation("IR");
+
+  const [mostRecentPost, ...posts] = await getNMostRecentPosts(4);
+
   return {
     props: {
       gdp: { label: "GDP", data: gdp },
@@ -55,11 +67,14 @@ export const getStaticProps = (async () => {
         data: importPriceIndex,
         inverted: true,
       },
+
+      mostRecentPost,
+      posts,
     },
   };
 }) satisfies GetStaticProps<Props>;
 
-const INDICATORS_TO_RENDER: Array<keyof Props> = [
+const INDICATORS_TO_RENDER: Array<EconomicIndicator> = [
   "gdp",
   "unemployment",
   "wageGrowth",
@@ -76,36 +91,38 @@ const PERCENT_RENDERER = (d: Observation) =>
     minimumFractionDigits: 2,
   });
 
-const INDICATOR_METRIC_RENDERER: Map<keyof Props, (d: Observation) => string> =
-  new Map([
-    [
-      "gdp",
-      (d) =>
-        `USD ${new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(d.value / 1000)} Trillion`,
-    ],
-    ["unemployment", PERCENT_RENDERER],
-    ["wageGrowth", PERCENT_RENDERER],
-    ["inflation", PERCENT_RENDERER],
-    ["interestRate", PERCENT_RENDERER],
-    ["cpi", (d) => `${d.value}`],
-    [
-      "debt",
-      (d) =>
-        `USD ${new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(d.value / 1000)} Trillion`,
-    ],
-    ["importPriceIndex", (d) => `${d.value}`],
-  ]);
+const INDICATOR_METRIC_RENDERER: Map<
+  EconomicIndicator,
+  (d: Observation) => string
+> = new Map([
+  [
+    "gdp",
+    (d) =>
+      `USD ${new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(d.value / 1000)} Trillion`,
+  ],
+  ["unemployment", PERCENT_RENDERER],
+  ["wageGrowth", PERCENT_RENDERER],
+  ["inflation", PERCENT_RENDERER],
+  ["interestRate", PERCENT_RENDERER],
+  ["cpi", (d) => `${d.value}`],
+  [
+    "debt",
+    (d) =>
+      `USD ${new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(d.value / 1000)} Trillion`,
+  ],
+  ["importPriceIndex", (d) => `${d.value}`],
+]);
 
+// TODO(sathyp): No need to pass all props, just the keys that are economics.
 function Indicators(props: Props) {
-  const [selectedMetric, setSelectedMetric] = useState<keyof Props | null>(
-    null
-  );
+  const [selectedMetric, setSelectedMetric] =
+    useState<EconomicIndicator | null>(null);
 
   // TODO(sathyp): This should be indexed on Trump taking office.
   const percentDiff = (data: Observation[]) => {
@@ -227,19 +244,21 @@ interface ArticleProps {
   title: string;
   headline: string;
   author: string;
-  date: string;
+  date: Date;
   img: string;
   url: string;
 }
 
 function OlderArticle({ title, headline, date, img, url }: ArticleProps) {
   return (
-    <Link href={url} className="flex flex-col space-y-2">
+    <Link href={url} className="flex-1 flex flex-col space-y-2">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img alt="" className="h-40 rounded-md" src={img} />
       <h3 className="hover:underline">{title}</h3>
       <p className="body-s">{headline}</p>
-      <span className="body-title text-gray-500">{date}</span>
+      <span className="body-title text-gray-500">
+        {formatDistanceToNow(date, { addSuffix: true })}
+      </span>
     </Link>
   );
 }
@@ -253,7 +272,9 @@ function TopArticle({ title, headline, date, img, url, author }: ArticleProps) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img alt="" className="h-56 rounded-md" src={img} />
       <div className="flex flex-col space-y-2">
-        <span className="body-title text-gray-500">{date}</span>
+        <span className="body-title text-gray-500">
+          {formatDistanceToNow(date, { addSuffix: true })}
+        </span>
         <h2 className="hover:underline">{title}</h2>
         <p className="body-l">{headline}</p>
         <span className="font-semibold text-sm">By {author}</span>
@@ -272,51 +293,32 @@ export default function Home(props: Props) {
           {/* Top Article */}
           <div className="pb-8">
             <TopArticle
-              url="/article"
-              img="https://images.unsplash.com/photo-1478576573461-bb5026f9b302?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              author="Pranav Sathyanarayanan"
-              title="What is the Social Security Fairness Act of 2023 About?"
-              headline="Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
-                aut fugit, sed quia consequuntur magni dolores eos qui ratione
-                voluptatem sequi nesciunt."
-              date="3 Days Ago"
+              url={`/${props.mostRecentPost.slug.current}`}
+              img={props.mostRecentPost.image ?? ""}
+              author={props.mostRecentPost.author}
+              title={props.mostRecentPost.title}
+              headline={props.mostRecentPost.description}
+              date={new Date(props.mostRecentPost.publishedAt)}
             />
           </div>
 
           {/* Next 3 */}
           <div className="flex flex-col lg:flex-row space-y-8 lg:space-y-0 lg:space-x-8 pt-8">
-            <OlderArticle
-              url="/article"
-              img="https://images.unsplash.com/photo-1478576573461-bb5026f9b302?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              title="Trump Cabinet nominees targeted in attacks ranging from 'bomb threats' to 'swatting'"
-              headline="Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
-                aut fugit, sed quia consequuntur magni dolores eos qui ratione
-                voluptatem sequi nesciunt."
-              date="3 Days Ago"
-              author="Pranav Sathyanarayanan"
-            />
+            {props.posts.map((p) => (
+              <OlderArticle
+                key={p._id}
+                url={`/${p.slug.current}`}
+                img={p.image ?? ""}
+                title={p.title}
+                headline={p.description}
+                date={new Date(p.publishedAt)}
+                author={p.author}
+              />
+            ))}
 
-            <OlderArticle
-              url="/article"
-              img="https://images.unsplash.com/photo-1478576573461-bb5026f9b302?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              title="Trump Cabinet nominees targeted in attacks ranging from 'bomb threats' to 'swatting'"
-              headline="Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
-                aut fugit, sed quia consequuntur magni dolores eos qui ratione
-                voluptatem sequi nesciunt."
-              date="3 Days Ago"
-              author="Pranav Sathyanarayanan"
-            />
-
-            <OlderArticle
-              url="/article"
-              img="https://images.unsplash.com/photo-1478576573461-bb5026f9b302?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              title="Trump Cabinet nominees targeted in attacks ranging from 'bomb threats' to 'swatting'"
-              headline="Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
-                aut fugit, sed quia consequuntur magni dolores eos qui ratione
-                voluptatem sequi nesciunt."
-              date="3 Days Ago"
-              author="Pranav Sathyanarayanan"
-            />
+            {[...Array(3 - props.posts.length)].map((_, idx) => (
+              <div key={idx} className="flex-1"></div>
+            ))}
           </div>
         </div>
         <LegislationToWatch />
