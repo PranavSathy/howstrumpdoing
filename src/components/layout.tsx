@@ -1,6 +1,7 @@
 import { faDiscord } from "@fortawesome/free-brands-svg-icons/faDiscord";
 import { faLandmarkDome } from "@fortawesome/free-solid-svg-icons/faLandmarkDome";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { differenceInDays } from "date-fns";
 import Head from "next/head";
 import Link from "next/link";
 
@@ -10,7 +11,7 @@ function Header() {
       <div className="hidden sm:flex w-full justify-between space-x-8 max-w-[1280px] justify-self-center">
         <div className="content-end">
           <div className="body-title text-gray-500 py-2 px-3 rounded-md bg-gray-200">
-            Day 1
+            Day {differenceInDays(new Date(), new Date("2025-01-20"))}
           </div>
         </div>
         <Link href="/" className="items-center flex flex-col text-gray-500">
