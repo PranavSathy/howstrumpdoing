@@ -272,7 +272,7 @@ function Indicators(props: Props) {
             </div>
             <p className="font-semibold chart-citation text-gray-500">
               <AutoLinkText
-                text={`${props[selectedMetric].citation}, ${format(new Date(), "MMMM d, yyyy")}`}
+                text={`${props[selectedMetric].citation} , ${format(new Date(), "MMMM d, yyyy")}`}
               />
             </p>
           </div>
