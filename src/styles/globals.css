@@ -27,6 +27,11 @@
     line-height: 28px;
   }
 
+  .chart-citation {
+    font-size: 12px;
+    line-height: 22px;
+  }
+
   .prose-h1 {
     @apply font-semibold text-4xl;
   }

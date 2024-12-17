@@ -9,15 +9,16 @@ import {
   Legislation,
   PostPreview,
 } from "@/lib/sanity";
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { GetStaticProps } from "next";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface Indicator {
   label: string;
   data: Observation[];
   inverted?: boolean;
+  citation: string;
 }
 
 interface Props {
@@ -55,25 +56,59 @@ export const getStaticProps = (async () => {
 
   return {
     props: {
-      gdp: { label: "GDP", data: gdp },
+      gdp: {
+        label: "GDP",
+        data: gdp,
+        citation:
+          "U.S. Bureau of Economic Analysis, Gross Domestic Product [GDP], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/GDP",
+      },
       unemployment: {
         label: "Unemployment",
         data: unemployment,
         inverted: true,
+        citation:
+          "U.S. Bureau of Labor Statistics, Unemployment Rate [UNRATE], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/UNRATE",
       },
-      wageGrowth: { label: "Wage Growth", data: wageGrowth },
-      inflation: { label: "Inflation", data: inflation, inverted: true },
+      wageGrowth: {
+        label: "Wage Growth",
+        data: wageGrowth,
+        citation:
+          "Federal Reserve Bank of Atlanta, Unweighted Median Hourly Wage Growth: Overall [FRBATLWGTUMHWGO], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/FRBATLWGTUMHWGO",
+      },
+      inflation: {
+        label: "Inflation",
+        data: inflation,
+        inverted: true,
+        citation:
+          "Federal Reserve Bank of Cleveland, Median Consumer Price Index [MEDCPIM158SFRBCLE], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/MEDCPIM158SFRBCLE",
+      },
       interestRate: {
         label: "Interest Rate",
         data: interestRate,
         inverted: true,
+        citation:
+          "Board of Governors of the Federal Reserve System (US), Federal Funds Effective Rate [DFF], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/DFF",
       },
-      cpi: { label: "CPI", data: cpi, inverted: true },
-      debt: { label: "Total Debt", data: debt, inverted: true },
+      cpi: {
+        label: "CPI",
+        data: cpi,
+        inverted: true,
+        citation:
+          "U.S. Bureau of Labor Statistics, Consumer Price Index for All Urban Consumers: All Items in U.S. City Average [CPIAUCSL], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/CPIAUCSL",
+      },
+      debt: {
+        label: "Total Debt",
+        data: debt,
+        inverted: true,
+        citation:
+          "U.S. Department of the Treasury. Fiscal Service, Federal Debt: Total Public Debt [GFDEBTN], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/GFDEBTN",
+      },
       importPriceIndex: {
         label: "Import Price Index",
         data: importPriceIndex,
         inverted: true,
+        citation:
+          "U.S. Bureau of Labor Statistics, Import Price Index (End Use): All Commodities [IR], retrieved from FRED, Federal Reserve Bank of St. Louis; https://fred.stlouisfed.org/series/IR",
       },
 
       mostRecentPost,
@@ -127,6 +162,33 @@ const INDICATOR_METRIC_RENDERER: Map<
   ],
   ["importPriceIndex", (d) => `${d.value}`],
 ]);
+
+function AutoLinkText({ text }: { text: string }) {
+  const urlRegex = /https?:\/\/[^\s]+/g;
+
+  const parts = text.split(urlRegex);
+  const urls = text.match(urlRegex);
+
+  return (
+    <span>
+      {parts.map((part, index) => (
+        <React.Fragment key={index}>
+          {part}
+          {urls && urls[index] && (
+            <a
+              href={urls[index]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {urls[index]}
+            </a>
+          )}
+        </React.Fragment>
+      ))}
+    </span>
+  );
+}
 
 // TODO(sathyp): No need to pass all props, just the keys that are economics.
 function Indicators(props: Props) {
@@ -208,6 +270,11 @@ function Indicators(props: Props) {
                 invertColors={props[selectedMetric].inverted}
               />
             </div>
+            <p className="font-semibold chart-citation text-gray-500">
+              <AutoLinkText
+                text={`${props[selectedMetric].citation}, ${format(new Date(), "MMMM d, yyyy")}`}
+              />
+            </p>
           </div>
         )}
       </div>
