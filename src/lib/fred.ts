@@ -22,11 +22,15 @@ export async function getObservation(
   observation: FredObservations
 ): Promise<Observation[]> {
   console.log(`Querying FRED Observation data for Series: ${observation}`);
-  const data = await fred.series.getObservationsForSeries(observation);
-  return data.observations
-    .map((o) => ({
-      date: o.date,
-      value: Number(o.value),
-    }))
-    .filter((v) => isAfter(v.date, "2019-12-31"));
+  try {
+    const data = await fred.series.getObservationsForSeries(observation);
+    return data.observations
+      .map((o) => ({
+        date: o.date,
+        value: Number(o.value),
+      }))
+      .filter((v) => isAfter(v.date, "2019-12-31"));
+  } catch {
+    return [];
+  }
 }
