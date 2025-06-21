@@ -35,7 +35,7 @@ export async function getObservation(
   }
 }
 
-export const INAUGURATION_DAY = new Date("2025-01-20");
+export const INAUGURATION_DAY = new Date(2025, 1, 20);
 
 export function findClosestBefore(
   observations: Observation[],

@@ -163,7 +163,7 @@ const INDICATOR_METRIC_RENDERER: Map<
       `USD ${new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
-      }).format(d.value / 1000)} Trillion`,
+      }).format(d.value / 1_000_000)} Trillion`,
   ],
   ["importPriceIndex", (d) => `${d.value}`],
 ]);

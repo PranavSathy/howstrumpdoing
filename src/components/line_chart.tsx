@@ -12,8 +12,8 @@ interface DeserializedObservation {
 }
 
 function formatQuarter(date: Date): string {
-  const month = date.getMonth(); // 0-indexed
-  const year = date.getFullYear();
+  const month = date.getUTCMonth();
+  const year = date.getUTCFullYear();
   const quarter = Math.floor(month / 3) + 1;
   return `Q${quarter} ${year}`;
 }
