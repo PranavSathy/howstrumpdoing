@@ -30,9 +30,6 @@ class JournalismAi:
     def researcher(self) -> Agent:
         return Agent(
             config=self.agents_config["researcher"],  # type: ignore[index]
-            # role="Political Research Analyst",
-            # goal="Find and identify the most impactual/consequental political events/policy events.",
-            # backstory="An expert analyst with a keen eye for key political issues regarding the Trump administration.",
             tools=[search_tool],
             verbose=True,
         )
@@ -41,9 +38,6 @@ class JournalismAi:
     def analyst(self) -> Agent:
         return Agent(
             config=self.agents_config["analyst"],  # type: ignore[index]
-            # role="Content Writer",
-            # goal="Craft simple, non-biased news articles summarizing political events easily for the average American.",
-            # backstory="A completely unbiased , skilled writer with an eye for detail.",
             verbose=True,
         )
 
@@ -54,9 +48,6 @@ class JournalismAi:
     def research_task(self) -> Task:
         return Task(
             config=self.tasks_config["research_task"]  # type: ignore[index]
-            # agent=self.researcher,
-            # description="Research key events regarding the Trump administration's policies between June 7th, 2025 to June 12th, 2025.",
-            # expected_output="A summary of all the key events and their intended consequences while maintaining complete non-partisan commentary.",
         )
 
     @task
@@ -64,10 +55,6 @@ class JournalismAi:
         return Task(
             config=self.tasks_config["analysis_task"],  # type: ignore[index]
             output_file="output/report.md",
-            # agent=self.reporting_analyst,
-            # description="Write an engaging news article about recent policy/political events, based on the political research analyst's summary. Keep it short, direct and factual only.",
-            # expected_output="A 4-paragraph news article formatted in markdown with engaging, informative, and accessible content, avoiding complex jargon.",
-            # output_file="report.md",
         )
 
     @crew
