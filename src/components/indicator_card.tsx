@@ -1,3 +1,4 @@
+import { faArrowCircleRight } from "@fortawesome/free-solid-svg-icons";
 import { faArrowCircleDown } from "@fortawesome/free-solid-svg-icons/faArrowCircleDown";
 import { faArrowCircleUp } from "@fortawesome/free-solid-svg-icons/faArrowCircleUp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -5,7 +6,7 @@ import cn from "classnames";
 
 interface Props {
   label: string;
-  percentage: number;
+  percentage: number | null;
   selected?: boolean;
   inverted?: boolean;
   onClick: () => void;
@@ -18,6 +19,14 @@ export function Arrow({
 }: Pick<Props, "inverted" | "percentage"> & { classes?: string }) {
   const upColor = inverted ? "text-red-600" : "text-green-600";
   const downColor = inverted ? "text-green-600" : "text-red-600";
+
+  if (percentage == null || percentage === 0)
+    return (
+      <FontAwesomeIcon
+        icon={faArrowCircleRight}
+        className={cn("size-5", "text-gray-600", classes)}
+      />
+    );
 
   return percentage > 0 ? (
     <FontAwesomeIcon
@@ -52,7 +61,7 @@ export function IndicatorCard({
       </span>
       <div className="flex flex-row justify-between">
         <span className="text-xl text-gray-900">
-          {Number(percentage / 100).toLocaleString(undefined, {
+          {Number((percentage ?? 0) / 100).toLocaleString(undefined, {
             style: "percent",
             minimumFractionDigits: 2,
           })}

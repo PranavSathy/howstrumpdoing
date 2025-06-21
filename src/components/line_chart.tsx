@@ -7,9 +7,17 @@ interface DeserializedObservation {
   value: number;
 }
 
+function formatQuarter(date: Date): string {
+  const month = date.getMonth(); // 0-indexed
+  const year = date.getFullYear();
+  const quarter = Math.floor(month / 3) + 1;
+  return `Q${quarter} ${year}`;
+}
+
 export function LineChart(props: {
   data: Observation[];
   invertColors?: boolean;
+  quarterly: boolean;
 }) {
   const renderChart = useCallback(
     (chartRef: HTMLDivElement) => {
@@ -71,11 +79,17 @@ export function LineChart(props: {
         .domain([0, Math.max(...data.map((d) => d.value))])
         .range([height, 0]);
 
+      let xAxisLabel = d3.axisBottom(xScale).ticks(6);
+
+      if (props.quarterly) {
+        xAxisLabel = xAxisLabel.tickFormat((d) => formatQuarter(d as Date));
+      }
+
       // Add axes
       svg
         .append("g")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(xScale).ticks(6));
+        .call(xAxisLabel);
 
       svg.append("g").call(d3.axisLeft(yScale).ticks(6));
 
@@ -146,6 +160,23 @@ export function LineChart(props: {
         .attr("r", 2)
         .attr("fill", color); // TODO(sathyp): Update this to be the right color.
 
+      // Jan 20, 2025 vertical marker
+      const jan2025X = xScale(new Date("2025-01-20"));
+
+      // Only render if it's within the scale range
+      if (jan2025X >= 0 && jan2025X <= width) {
+        svg
+          .append("line")
+          .attr("x1", jan2025X)
+          .attr("x2", jan2025X)
+          .attr("y1", 0)
+          .attr("y2", height)
+          .attr("stroke", "#000") // or any contrasting color
+          .attr("stroke-dasharray", "4 4") // dotted/dashed line
+          .attr("stroke-width", 1)
+          .attr("opacity", 0.5);
+      }
+
       svg
         .selectAll("line.horizontalGrid")
         .data(yScale.ticks(6))
@@ -176,11 +207,11 @@ export function LineChart(props: {
           tooltip
             .style("display", "block")
             .html(
-              `Date: ${(
-                d as DeserializedObservation
-              ).date.toDateString()}<br>Value: ${
-                (d as DeserializedObservation).value
-              }`
+              `Date: ${
+                props.quarterly
+                  ? formatQuarter((d as DeserializedObservation).date)
+                  : (d as DeserializedObservation).date.toDateString()
+              }<br>Value: ${(d as DeserializedObservation).value}`
             );
         })
         .on("mousemove", (event) => {

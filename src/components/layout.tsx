@@ -1,4 +1,3 @@
-import { faDiscord } from "@fortawesome/free-brands-svg-icons/faDiscord";
 import { faLandmarkDome } from "@fortawesome/free-solid-svg-icons/faLandmarkDome";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { differenceInDays } from "date-fns";
@@ -41,7 +40,7 @@ function Header() {
         <div className="flex justify-between">
           <div className="content-center">
             <div className="body-title text-gray-500 py-2 px-3 rounded-md bg-gray-200">
-              Day 1
+              Day {differenceInDays(new Date(), new Date("2025-01-20"))}
             </div>
           </div>
           <div className="content-center font-medium text-sm text-gray-500">
@@ -58,7 +57,7 @@ function Footer() {
     <footer className="p-10 pb-20 lg:h-56 bg-gray-50 border-t border-gray-500">
       <div className="flex flex-col md:flex-row w-full justify-between space-y-8 md:space-y-0 md:space-x-8 max-w-[1280px] justify-self-center">
         <span className="font-extrabold text-2xl text-gray-500">
-          Citizen Journalism In Action
+          AI Journalism In Action
         </span>
         <p className="body-m text-gray-500">
           This platform is dedicated to unbiased, independent analysis of the
@@ -69,13 +68,8 @@ function Footer() {
           alive.
         </p>
         <div className="flex flex-col space-y-2 items-center md:items-end">
-          <div className="body-title p-3 rounded-md bg-gray-200 whitespace-nowrap flex flex-row space-x-1">
-            {/* TODO(sathyp): Leverage Discord Icon here and link to Discord server */}
-            <FontAwesomeIcon icon={faDiscord} className="size-4" />
-            <span>Join Our Discord Community</span>
-          </div>
           <span className="body-s text-gray-900 whitespace-nowrap text-end">
-            © HowsTrumpDoing, 2024
+            © HowsTrumpDoing, 2024-2025
           </span>
         </div>
       </div>

@@ -1,8 +1,11 @@
 import { Arrow, IndicatorCard } from "@/components/indicator_card";
 import { Layout } from "@/components/layout";
-import { LegislationCard } from "@/components/legislation_card";
 import { LineChart } from "@/components/line_chart";
-import { getObservation, type Observation } from "@/lib/fred";
+import {
+  calculatePercentDifference,
+  getObservation,
+  type Observation,
+} from "@/lib/fred";
 import {
   getNMostRecentLegislations,
   getNMostRecentPosts,
@@ -40,6 +43,8 @@ interface Props {
 type EconomicIndicator = {
   [K in keyof Props]: Props[K] extends Indicator ? K : never;
 }[keyof Props];
+
+const QUARTERLY_INDICATORS: Set<EconomicIndicator> = new Set(["gdp", "debt"]);
 
 export const getStaticProps = (async () => {
   const gdp = await getObservation("GDP");
@@ -195,23 +200,15 @@ function Indicators(props: Props) {
   const [selectedMetric, setSelectedMetric] =
     useState<EconomicIndicator | null>(null);
 
-  // TODO(sathyp): This should be indexed on Trump taking office.
-  const percentDiff = (data: Observation[]) => {
-    const A = data[data.length - 1].value ?? 0;
-    const B = data[0].value ?? 0;
-    return (100 * (A - B)) / B;
-  };
-
   const selectedMetricPercentage = selectedMetric
-    ? percentDiff(props[selectedMetric].data)
+    ? calculatePercentDifference(props[selectedMetric].data)
     : 0;
 
   return (
     <div className="py-10 bg-gray-50 border-gray-200 border-y">
       <div className="flex flex-col px-5 lg:px-20 space-y-2 max-w-[1280px] w-full justify-self-center">
         <span className="text-gray-500 font-medium text-xs">
-          {/* TODO(sathyp): This should say since Trump took office. */}
-          Since Jan 1, 2020
+          Since Jan 20, 2025
         </span>
 
         <div className="flex flex-row overflow-x-auto space-x-2">
@@ -225,7 +222,7 @@ function Indicators(props: Props) {
                 )
               }
               label={props[indicator].label}
-              percentage={percentDiff(props[indicator].data)}
+              percentage={calculatePercentDifference(props[indicator].data)}
               inverted={props[indicator].inverted}
             />
           ))}
@@ -247,7 +244,7 @@ function Indicators(props: Props) {
             </div>
             <div className="flex space-x-2">
               <span className="chart-percentage">
-                {Number(selectedMetricPercentage / 100).toLocaleString(
+                {Number((selectedMetricPercentage ?? 0) / 100).toLocaleString(
                   undefined,
                   {
                     style: "percent",
@@ -261,13 +258,14 @@ function Indicators(props: Props) {
                 inverted={props[selectedMetric].inverted}
               />
               <span className="body-title text-gray-500 self-end">
-                Since Jan 1, 2020
+                Since Jan 20, 2025
               </span>
             </div>
             <div className="bg-white border max-w-[1120px] border-gray-200 rounded-md">
               <LineChart
                 data={props[selectedMetric].data}
                 invertColors={props[selectedMetric].inverted}
+                quarterly={QUARTERLY_INDICATORS.has(selectedMetric)}
               />
             </div>
             <p className="font-semibold chart-citation text-gray-500">
@@ -282,22 +280,22 @@ function Indicators(props: Props) {
   );
 }
 
-function LegislationToWatch(props: { legislations: Legislation[] }) {
-  return (
-    <div className="flex-[1] pt-8 lg:pt-0 lg:pl-8 flex flex-col space-y-4">
-      <span className="body-title text-gray-500">Legislation To Watch</span>
+// function LegislationToWatch(props: { legislations: Legislation[] }) {
+//   return (
+//     <div className="flex-[1] pt-8 lg:pt-0 lg:pl-8 flex flex-col space-y-4">
+//       <span className="body-title text-gray-500">Legislation To Watch</span>
 
-      {props.legislations.map((l) => (
-        <LegislationCard
-          key={l._id}
-          title={l.title}
-          subtext={l.status}
-          link={l.link}
-        />
-      ))}
-    </div>
-  );
-}
+//       {props.legislations.map((l) => (
+//         <LegislationCard
+//           key={l._id}
+//           title={l.title}
+//           subtext={l.status}
+//           link={l.link}
+//         />
+//       ))}
+//     </div>
+//   );
+// }
 
 interface ArticleProps {
   title: string;
@@ -380,7 +378,8 @@ export default function Home(props: Props) {
             ))}
           </div>
         </div>
-        <LegislationToWatch legislations={props.legislations} />
+        {/* TODO(sathyp): This has been difficult to keep up with, will re-enable this later. */}
+        {/* <LegislationToWatch legislations={props.legislations} /> */}
       </div>
     </Layout>
   );
