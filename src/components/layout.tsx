@@ -1,3 +1,4 @@
+import { INAUGURATION_DAY } from "@/lib/fred";
 import { faLandmarkDome } from "@fortawesome/free-solid-svg-icons/faLandmarkDome";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { differenceInDays } from "date-fns";
@@ -10,7 +11,7 @@ function Header() {
       <div className="hidden sm:flex w-full justify-between space-x-8 max-w-[1280px] justify-self-center">
         <div className="content-end">
           <div className="body-title text-gray-500 py-2 px-3 rounded-md bg-gray-200">
-            Day {differenceInDays(new Date(), new Date("2025-01-20"))}
+            Day {differenceInDays(new Date(), INAUGURATION_DAY)}
           </div>
         </div>
         <Link href="/" className="items-center flex flex-col text-gray-500">
@@ -40,7 +41,7 @@ function Header() {
         <div className="flex justify-between">
           <div className="content-center">
             <div className="body-title text-gray-500 py-2 px-3 rounded-md bg-gray-200">
-              Day {differenceInDays(new Date(), new Date("2025-01-20"))}
+              Day {differenceInDays(new Date(), INAUGURATION_DAY)}
             </div>
           </div>
           <div className="content-center font-medium text-sm text-gray-500">

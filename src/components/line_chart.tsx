@@ -1,4 +1,8 @@
-import { type Observation } from "@/lib/fred";
+import {
+  findClosestBefore,
+  INAUGURATION_DAY,
+  type Observation,
+} from "@/lib/fred";
 import * as d3 from "d3";
 import { useCallback } from "react";
 
@@ -57,8 +61,14 @@ export function LineChart(props: {
         .domain(d3.extent(data, (d) => d.date) as [Date, Date])
         .range([0, width]);
 
-      const firstData = data[0].value;
+      // const firstData = data[0].value;
+      const firstData = (
+        findClosestBefore(props.data, INAUGURATION_DAY) ?? { value: 0 }
+      ).value;
       const lastData = data[data.length - 1].value;
+
+      const dataBefore = data.filter((d) => d.date <= INAUGURATION_DAY);
+      const dataAfter = data.filter((d) => d.date >= INAUGURATION_DAY);
 
       const upLineColor = !props.invertColors ? "#16A34A" : "#DC2626";
       const downLineColor = !props.invertColors ? "#DC2626" : "#16A34A";
@@ -74,10 +84,16 @@ export function LineChart(props: {
       const gradient =
         lastData > firstData ? upGradientColor : downGradientColor;
 
-      const yScale = d3
-        .scaleLinear()
-        .domain([0, Math.max(...data.map((d) => d.value))])
-        .range([height, 0]);
+      const values = data.map((d) => d.value);
+      const minValue = d3.min(values) ?? 0;
+      const maxValue = d3.max(values) ?? 1;
+
+      const paddingFactor = 0.05; // 5% padding
+      const valueRange = maxValue - minValue;
+      const yMin = minValue - valueRange * paddingFactor;
+      const yMax = maxValue + valueRange * paddingFactor;
+
+      const yScale = d3.scaleLinear().domain([yMin, yMax]).range([height, 0]);
 
       let xAxisLabel = d3.axisBottom(xScale).ticks(6);
 
@@ -110,7 +126,7 @@ export function LineChart(props: {
 
       svg
         .append("linearGradient")
-        .attr("id", "area-gradient")
+        .attr("id", "pre-area-gradient")
         .attr("gradientUnits", "userSpaceOnUse")
         .attr("x1", "0%")
         .attr("y1", "0%")
@@ -121,7 +137,7 @@ export function LineChart(props: {
         // mixed values will change the angle of the linear gradient. Adjust as needed.
         .selectAll("stop")
         .data([
-          { offset: "0%", color: gradient }, // TODO(sathyp): Update this to be the right color.
+          { offset: "0%", color: "rgba(163,163,163,0.2)" }, // TODO(sathyp): Update this to be the right color.
           { offset: "80%", color: "transparent" },
         ])
         .enter()
@@ -133,21 +149,73 @@ export function LineChart(props: {
           return d.color;
         });
 
-      // Add the line
+      svg
+        .append("linearGradient")
+        .attr("id", "area-gradient")
+        .attr("gradientUnits", "userSpaceOnUse")
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "0%")
+        .attr("y2", "100%")
+        // x1 = 100% (red will be on right horz) / y1 = 100% (red will be on bottom vert)
+        // x2 = 100% (red will be on left horz) / y2 = 100% (red will be on top vert)
+        // mixed values will change the angle of the linear gradient. Adjust as needed.
+        .selectAll("stop")
+        .data([
+          { offset: "0%", color: gradient },
+          { offset: "80%", color: "transparent" },
+        ])
+        .enter()
+        .append("stop")
+        .attr("offset", function (d) {
+          return d.offset;
+        })
+        .attr("stop-color", function (d) {
+          return d.color;
+        });
+
+      // Line BEFORE Inauguration Day (gray)
       svg
         .append("path")
-        .datum(data)
+        .datum(dataBefore)
         .attr("fill", "none")
-        .attr("stroke", color) // TODO(sathyp): Update this to be the right color.
+        .attr("stroke", "#A3A3A3") // gray
+        .attr("stroke-width", 2)
+        .attr("d", line);
+
+      // Line AFTER Inauguration Day (color)
+      svg
+        .append("path")
+        .datum(dataAfter)
+        .attr("fill", "none")
+        .attr("stroke", color) // dynamic based on trend
         .attr("stroke-width", 2)
         .attr("d", line);
 
       svg
         .append("path")
-        .datum(data)
+        .datum(dataBefore)
+        .attr("fill", "url(#pre-area-gradient)")
+        .attr("stroke-width", "0")
+        .attr("d", area);
+
+      svg
+        .append("path")
+        .datum(dataAfter)
         .attr("fill", "url(#area-gradient)")
         .attr("stroke-width", "0")
         .attr("d", area);
+
+      // Add circles for data points
+      svg
+        .selectAll("circle")
+        .data(dataBefore)
+        .enter()
+        .append("circle")
+        .attr("cx", (d) => xScale(d.date))
+        .attr("cy", (d) => yScale(d.value))
+        .attr("r", 2)
+        .attr("fill", "#A3A3A3");
 
       // Add circles for data points
       svg
@@ -158,10 +226,10 @@ export function LineChart(props: {
         .attr("cx", (d) => xScale(d.date))
         .attr("cy", (d) => yScale(d.value))
         .attr("r", 2)
-        .attr("fill", color); // TODO(sathyp): Update this to be the right color.
+        .attr("fill", color);
 
       // Jan 20, 2025 vertical marker
-      const jan2025X = xScale(new Date("2025-01-20"));
+      const jan2025X = xScale(INAUGURATION_DAY);
 
       // Only render if it's within the scale range
       if (jan2025X >= 0 && jan2025X <= width) {
@@ -175,6 +243,17 @@ export function LineChart(props: {
           .attr("stroke-dasharray", "4 4") // dotted/dashed line
           .attr("stroke-width", 1)
           .attr("opacity", 0.5);
+
+        // Add label text
+        svg
+          .append("text")
+          .attr("x", jan2025X)
+          .attr("y", -5) // position above the chart top
+          .attr("text-anchor", "middle")
+          .attr("fill", "#000")
+          .attr("font-size", "12px")
+          .attr("font-weight", "bold")
+          .text("Trump Takes Office");
       }
 
       svg
@@ -203,7 +282,7 @@ export function LineChart(props: {
 
       svg
         .selectAll("circle")
-        .on("mouseover", (event, d) => {
+        .on("mouseover", (_, d) => {
           tooltip
             .style("display", "block")
             .html(
@@ -227,7 +306,7 @@ export function LineChart(props: {
         container.remove();
       };
     },
-    [props.data, props.invertColors]
+    [props.data, props.invertColors, props.quarterly]
   );
 
   return <div ref={renderChart}></div>;

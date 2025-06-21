@@ -35,7 +35,9 @@ export async function getObservation(
   }
 }
 
-function findClosestBefore(
+export const INAUGURATION_DAY = new Date("2025-01-20");
+
+export function findClosestBefore(
   observations: Observation[],
   targetDate: Date
 ): Observation | null {
@@ -53,10 +55,9 @@ function findClosestBefore(
 export function calculatePercentDifference(
   observations: Observation[]
 ): number | null {
-  const jan20_2025 = new Date("2025-01-20");
   const today = new Date();
 
-  const obsBeforeJan2025 = findClosestBefore(observations, jan20_2025);
+  const obsBeforeJan2025 = findClosestBefore(observations, INAUGURATION_DAY);
   const obsBeforeToday = findClosestBefore(observations, today);
 
   if (!obsBeforeJan2025 || !obsBeforeToday || obsBeforeJan2025.value === 0) {
