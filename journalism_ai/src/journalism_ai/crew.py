@@ -24,6 +24,7 @@ class JournalismAi:
         self.editor = Agent(
             config=self.agents_config["editor"],
             allow_delegation=True,
+            tools=[self.serper_tool],
             verbose=True,
         )
         self.researcher = Agent(
@@ -42,7 +43,6 @@ class JournalismAi:
         topic_discovery_task = Task(
             config=self.tasks_config["topic_discovery_task"],
             agent=self.editor,
-            expected_output='Output a JSON object with one property "topics" that\'s an array of discovered topics, for example: {"topics": ["My topic"]}',
             output_pydantic=ResearchTopics,
         )
 

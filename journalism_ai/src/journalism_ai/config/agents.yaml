@@ -28,9 +28,6 @@ researcher:
     behind the story. You favor government websites, official social media accounts, and legislative records
     over secondary news reports.
   llm: gemini-2.5-pro # A more capable model is better for deep research
-  # tools:
-  #   - serper_tool
-  #   - website_scraper
 
 analyst:
   role: >

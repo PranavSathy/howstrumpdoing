@@ -3,15 +3,25 @@
 topic_discovery_task:
   description: >
     Scan for major news and developments related to the Trump administration between 
-    June 21st and June 27th, 2025. Focus on legislation, foreign policy, and major social media moments.
-    Do NOT conduct deep research. Simply identify less than 10 distinct, high-potential story leads.
+    June 21st and June 27th, 2025 **only** leveraging web search. Focus on legislation, foreign policy, and
+    major social media moments. Do NOT conduct deep research. Simply identify less than 5 distinct,
+    high-potential story leads.
 
   expected_output: >
-    A bulleted list of less than 10 concise, one-sentence story leads. Each lead must be a distinct topic.
+    A concise list of up to 5 distinct story leads formatted into the `topics` property of a JSON object. 
+    Each lead should be a one sentence long string, capturing the essence of the topic and a correspond timestamp.
+
     Example:
-    - A new trade tariff on European cars was announced via a White House press release.
-    - Donald Trump made a series of controversial posts on Truth Social regarding the upcoming debate.
-    - A key ally in the Senate introduced a new bill related to border security.
+    {
+      "topics": [
+        "The Trump administration proposed a new immigration bill focused on visa caps. (Politico, 06/17/2025)",
+        "Trump mocked his 2024 opponents in a Truth Social video that went viral. (Axios, 06/20/2025)",
+        "Biden criticized Trump-era tariffs in a Senate hearing recap. (CNN, 06/25/2025)",
+      ]
+    }
+
+  agent: editor
+  async_execution: false
 
   agent: editor
   async_execution: false
