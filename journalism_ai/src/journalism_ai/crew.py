@@ -1,72 +1,93 @@
 from typing import List
 
-from crewai import Agent, Crew, Process, Task
-from crewai.agents.agent_builder.base_agent import BaseAgent
-from crewai.project import CrewBase, agent, crew, task
-from crewai_tools import SerperDevTool
-
-# If you want to run a snippet of code before or after the crew starts,
-# you can use the @before_kickoff and @after_kickoff decorators
-# https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
-
-search_tool = SerperDevTool()
-# web_rag_tool = WebsiteSearchTool()
+from crewai import LLM, Agent, Crew, Process, Task
+from crewai_tools import SerperDevTool, WebsiteSearchTool
+from pydantic import BaseModel
 
 
-@CrewBase
+class ResearchTopics(BaseModel):
+    topics: List[str]
+
+
 class JournalismAi:
-    """JournalismAi crew"""
+    """JournalismAI crew with topic discovery and deep-dive research pipeline"""
 
-    agents: List[BaseAgent]
-    tasks: List[Task]
+    def __init__(self, agents_config, tasks_config):
+        self.agents_config = agents_config
+        self.tasks_config = tasks_config
 
-    # Learn more about YAML configuration files here:
-    # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
-    # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
+        # Tools
+        self.serper_tool = SerperDevTool()
+        self.website_scraper_tool = WebsiteSearchTool()
 
-    # If you would like to add tools to your agents, you can learn more about it here:
-    # https://docs.crewai.com/concepts/agents#agent-tools
-    @agent
-    def researcher(self) -> Agent:
-        return Agent(
-            config=self.agents_config["researcher"],  # type: ignore[index]
-            tools=[search_tool],
+        # Agents
+        self.editor = Agent(
+            config=self.agents_config["editor"],
+            allow_delegation=True,
+            verbose=True,
+        )
+        self.researcher = Agent(
+            config=self.agents_config["researcher"],
+            tools=[self.serper_tool, self.website_scraper_tool],
+            verbose=True,
+        )
+        self.analyst = Agent(
+            config=self.agents_config["analyst"],
+            tools=[self.serper_tool],
             verbose=True,
         )
 
-    @agent
-    def analyst(self) -> Agent:
-        return Agent(
-            config=self.agents_config["analyst"],  # type: ignore[index]
-            verbose=True,
+    def run(self):
+        # STEP 1: Topic Discovery
+        topic_discovery_task = Task(
+            config=self.tasks_config["topic_discovery_task"],
+            agent=self.editor,
+            expected_output='Output a JSON object with one property "topics" that\'s an array of discovered topics, for example: {"topics": ["My topic"]}',
+            output_pydantic=ResearchTopics,
         )
 
-    # To learn more about structured task outputs,
-    # task dependencies, and task callbacks, check out the documentation:
-    # https://docs.crewai.com/concepts/tasks#overview-of-a-task
-    @task
-    def research_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["research_task"]  # type: ignore[index]
-        )
-
-    @task
-    def analysis_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["analysis_task"],  # type: ignore[index]
-            output_file="output/report.md",
-        )
-
-    @crew
-    def crew(self) -> Crew:
-        """Creates the JournalismAi crew"""
-        # To learn how to add knowledge sources to your crew, check out the documentation:
-        # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
-
-        return Crew(
-            agents=self.agents,  # Automatically created by the @agent decorator
-            tasks=self.tasks,  # Automatically created by the @task decorator
+        topic_finder_crew = Crew(
+            agents=[self.editor],
+            tasks=[topic_discovery_task],
             process=Process.sequential,
             verbose=True,
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
         )
+
+        topic_list_output: ResearchTopics = (
+            topic_finder_crew.kickoff().tasks_output[0].pydantic
+        )
+
+        print("----- TOPICS DISCOVERED -----")
+        print(topic_list_output.topics)
+
+        # STEP 2: Deep Dive Research Tasks
+        deep_dive_tasks = []
+        for topic in topic_list_output.topics:
+            task_description = self.tasks_config["deep_dive_research_task_template"][
+                "description"
+            ].format(topic=topic)
+            deep_dive_task = Task(
+                config=self.tasks_config["deep_dive_research_task_template"],
+                description=task_description,
+                agent=self.researcher,
+            )
+            deep_dive_tasks.append(deep_dive_task)
+
+        # STEP 3: Synthesis Task
+        synthesis_task = Task(
+            config=self.tasks_config["synthesis_task"],
+            agent=self.analyst,
+            context=deep_dive_tasks + [topic_discovery_task],
+        )
+
+        # STEP 4: Main Crew
+        main_crew = Crew(
+            agents=[self.editor, self.researcher, self.analyst],
+            tasks=deep_dive_tasks + [synthesis_task],
+            process=Process.hierarchical,
+            manager_llm=LLM(model="gemini-2.5-pro"),
+            verbose=True,
+        )
+
+        final_result = main_crew.kickoff()
+        return final_result

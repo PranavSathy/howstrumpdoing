@@ -1,39 +1,62 @@
-# src/research_crew/config/tasks.yaml
-research_task:
+# src/research_crew/config/tasks.yaml (v3)
+
+topic_discovery_task:
   description: >
-    Conduct targeted research to identify major developments related to the Trump administration 
-    between June 14th and June 20th, 2025. Focus on:
-
-    1. Official presidential communications (press releases, speeches, verified social media)
-    2. Key moments on social media (viral posts, major reactions, trending hashtags involving Trump)
-    3. Foreign policy moves (military actions, diplomatic visits, international reactions)
-    4. Any federal legislation introduced, passed, or debated that has ties to the Trump platform, allies, or opposition narratives
-
-    Prioritize primary sources, verified media, and timestamps. Present all findings in a structured, chronological format 
-    with section headings and source links.
+    Scan for major news and developments related to the Trump administration between 
+    June 21st and June 27th, 2025. Focus on legislation, foreign policy, and major social media moments.
+    Do NOT conduct deep research. Simply identify less than 10 distinct, high-potential story leads.
 
   expected_output: >
-    A detailed, well-organized research briefing covering political, legislative, and international events directly 
-    connected to the Trump administration within the specified timeframe. Include direct quotes, dates, names, links to sources 
-    (articles, tweets, bills), and concise summaries under each section. Format it for easy scanning and downstream use in article writing.
+    A bulleted list of less than 10 concise, one-sentence story leads. Each lead must be a distinct topic.
+    Example:
+    - A new trade tariff on European cars was announced via a White House press release.
+    - Donald Trump made a series of controversial posts on Truth Social regarding the upcoming debate.
+    - A key ally in the Senate introduced a new bill related to border security.
+
+  agent: editor
+  async_execution: false
+
+# This task is a TEMPLATE. We will create copies of it dynamically.
+deep_dive_research_task_template:
+  description: >
+    For the assigned topic: "{topic}"
+
+    1. Conduct a deep-dive investigation.
+    2. Prioritize primary sources: official government websites (whitehouse.gov, congress.gov),
+       verified social media accounts, and direct quotes from press briefings.
+    3. Find and cite at least 2-3 primary sources.
+    4. Compile all findings into a detailed research brief. Include URLs, direct quotes, dates,
+       and the names of individuals or organizations involved.
+    5. Avoid quoting other news outlets. Quote the original source.
+
+  expected_output: >
+    A detailed research brief for the single topic. The brief must be well-structured with clear
+    headings, direct source links, and comprehensive summaries. It should serve as the sole source
+    of information for a journalist writing an article on this specific topic.
 
   agent: researcher
+  async_execution: true # These can run in parallel
 
-analysis_task:
+synthesis_task:
   description: >
-    Review the provided research findings and produce a news-style article suitable for a major media outlet. 
-    The piece should:
+    Review the collection of detailed research briefs provided from the previous tasks.
+    Synthesize them into a single, cohesive news article of 400-600 words.
 
-    1. Begin with a strong, engaging lead summarizing the core of the findings.
-    2. Present key events or developments in chronological order, with clear transitions.
-    3. Offer analysis of how the findings affect U.S. policy, public sentiment, or national interests, using neutral, accessible language.
-    4. Reference and hyperlink to original sources where possible for transparency and credibility.
-    5. Be formatted like a news article: clear paragraphs, concise sentences, professional tone, and under 500 words.
+    Your article must:
+    1. Have a compelling headline and a sub-headline.
+    2. Start with a strong lead paragraph that summarizes the most important development(s).
+    3. Weave the different topics together logically. If they are unrelated, present them as a
+       summary of the week's key events.
+    4. Maintain a neutral, journalistic tone.
+    5. Hyperlink all sources mentioned in the research briefs directly in the article text.
 
   expected_output: >
-    A newsroom-ready article that combines factual reporting with expert analysis. The final piece should read like it belongs in a major U.S. outlet—informative, sharp, and accessible to a general audience. Include a headline, subhead, and cite all sources with hyperlinks. Keep tone journalistic and avoid academic jargon.
+    A final, publish-ready news article in Markdown format. The article should be well-written,
+    factually accurate, and fully sourced with hyperlinks.
 
   agent: analyst
   context:
-    - research_task
+    - topic_discovery_task # This is important to give the analyst context of the original leads
+    # The deep dive tasks will be added dynamically
   output_file: output/article.md
+  async_execution: false
