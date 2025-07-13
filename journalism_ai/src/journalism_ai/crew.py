@@ -1,8 +1,12 @@
+import os
 from typing import List
 
 from crewai import LLM, Agent, Crew, Process, Task
 from crewai_tools import SerperDevTool, WebsiteSearchTool
+from newsapi import NewsApiClient
 from pydantic import BaseModel
+
+_NEWSAPI_CLIENT = NewsApiClient(api_key=os.environ["NEWSAPI_API_KEY"])
 
 
 class ResearchTopics(BaseModel):
@@ -24,7 +28,7 @@ class JournalismAi:
         self.editor = Agent(
             config=self.agents_config["editor"],
             allow_delegation=True,
-            tools=[self.serper_tool],
+            # tools=[self.serper_tool],
             verbose=True,
         )
         self.researcher = Agent(
@@ -39,6 +43,29 @@ class JournalismAi:
         )
 
     def run(self):
+        all_articles = _NEWSAPI_CLIENT.get_everything(
+            q="trump government",
+            from_param="2025-06-30",
+            language="en",
+            sort_by="relevancy",
+            page_size=50,
+        )
+
+        simplified_articles = [
+            {
+                "Title": article["title"],
+                "SourceName": article["source"]["name"],
+                "PublishedAt": article["publishedAt"],
+                "Description": article["description"],
+                # TODO(sathyp): Leverage AI to summarize content for pass-through.
+                "Content": article["content"][:200],  # Truncate to first 200 characters
+            }
+            for article in all_articles.get("articles", [])
+        ]
+
+        # print(simplified_articles)
+        # return
+
         # STEP 1: Topic Discovery
         topic_discovery_task = Task(
             config=self.tasks_config["topic_discovery_task"],
@@ -54,7 +81,9 @@ class JournalismAi:
         )
 
         topic_list_output: ResearchTopics = (
-            topic_finder_crew.kickoff().tasks_output[0].pydantic
+            topic_finder_crew.kickoff(inputs={"articles": simplified_articles})
+            .tasks_output[0]
+            .pydantic
         )
 
         print("----- TOPICS DISCOVERED -----")
@@ -88,6 +117,9 @@ class JournalismAi:
             manager_llm=LLM(model="gemini-2.5-pro"),
             verbose=True,
         )
+
+        # TODO(sathyp): Generate thumbnail image using LLM to generate Imagen prompt and execute
+        # TODO(sathyp): Leverage AI Agent API on Sanity to auto-upload document w/ title for automation.
 
         final_result = main_crew.kickoff()
         return final_result

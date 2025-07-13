@@ -2,10 +2,13 @@
 
 topic_discovery_task:
   description: >
-    Scan for major news and developments related to the Trump administration between 
-    June 21st and June 27th, 2025 **only** leveraging web search. Focus on legislation, foreign policy, and
-    major social media moments. Do NOT conduct deep research. Simply identify less than 5 distinct,
-    high-potential story leads.
+    ===NEWS ARTICLES===
+    {articles}
+    ===================
+
+    Given the above list of news article titles in JSON format of News Articles, scan for major news and developments related to the 
+    Trump administration.  Focus on legislation, foreign policy, the economy, and major social media moments. Do NOT conduct
+    deep research. Simply identify less than 5 distinct, high-potential story leads.
 
   expected_output: >
     A concise list of up to 5 distinct story leads formatted into the `topics` property of a JSON object. 
@@ -19,9 +22,6 @@ topic_discovery_task:
         "Biden criticized Trump-era tariffs in a Senate hearing recap. (CNN, 06/25/2025)",
       ]
     }
-
-  agent: editor
-  async_execution: false
 
   agent: editor
   async_execution: false

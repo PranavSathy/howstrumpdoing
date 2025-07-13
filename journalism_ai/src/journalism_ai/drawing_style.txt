@@ -1,0 +1,19 @@
+
+Draw in a 1920s-style political cartoon drawn in black and white ink with a vintage hand-drawn aesthetic. The scene is set in an exaggerated, satirical style typical of editorial cartoons from that era. Include detailed caricatures of political figures (generic, no specific names), wearing early 20th-century suits, top hats, and monocles. The setting should have classical American symbolism like Uncle Sam, the U.S. Capitol, or an old-fashioned newspaper headline. Use heavy crosshatching, bold ink lines, and exaggerated expressions. The overall composition should look aged, like it was printed in a 1920s newspaper. No color. Emulate artists like Clifford Berryman or Rollin Kirby.
+
+===
+
+Create a black-and-white 1920s-style political cartoon thumbnail that visually represents the key themes from the following article:
+
+— A dramatic feud between a U.S. President and a tech billionaire over immigration and free speech.
+— The billionaire forms a third political party ("America Party") in defiance of the two-party system.
+— Supreme Court clears mass federal layoffs — a sweeping government workforce overhaul.
+— DOJ targets media fact-checking groups with an antitrust challenge, calling them a cartel.
+
+The cartoon should be in the vintage style of 1920s editorial illustrations — exaggerated, hand-drawn, with bold lines, crosshatching, and aged paper texture. No color. Emulate artists like Clifford Berryman or Rollin Kirby.
+
+Include classical American symbolism like Uncle Sam, the U.S. Capitol, scales of justice, or an eagle, integrated into a chaotic scene that satirizes power struggles and media censorship.
+
+Characters should be drawn as political archetypes (not recognizable people): a bombastic president figure, a smug tech mogul with sunglasses and money bags, and shadowy media figures around a printing press.
+
+The style must evoke a printed newspaper cartoon from the 1920s: expressive faces, strong visual metaphors, and visual satire.
